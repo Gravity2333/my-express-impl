@@ -5,6 +5,7 @@ import urlencoded from "./middlewares/urlencoded";
 import jsonResponse from "./middlewares/jsonResponse";
 import parseQuery from "./middlewares/parseQuery";
 import parseParams from "./middlewares/parseParams";
+import staticFile from "./middlewares/staticFile";
 import {
   Method,
   Middleware,
@@ -200,3 +201,6 @@ myExpress.Router = () => {
 
 /** 导出middlewares */
 myExpress.urlencoded = urlencoded;
+
+/** 导出 static */
+myExpress.static = staticFile

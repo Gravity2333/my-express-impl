@@ -18,6 +18,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@types/mime": "^2.0.3",
+    "mime": "^2.6.0",
     "path-to-regexp": "^8.2.0"
   }
 }

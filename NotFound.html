@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resetting some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Basic styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .error-message {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .error-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .home-link {
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+            text-decoration: none;
+            background-color: #ff7e5f;
+            padding: 12px 25px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-link:hover {
+            background-color: #feb47b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="error-message">
+            <h1 class="error-code">404</h1>
+            <p class="error-text">Oops! The page you're looking for doesn't exist.</p>
+            <a href="/" class="home-link">Back to Homepage</a>
+        </div>
+    </div>
+</body>
+
+</html>
