@@ -3,13 +3,11 @@ import path from "path";
 import fs from "fs";
 import userRouter from "./routers/user";
 import loginRouter from "./routers/login";
+import asyncMiddlewares from "./routers/async";
 
 const app = myExpress();
 
-const defaultPage = fs.readFileSync(
-  path.resolve(__dirname, "../template.html"),
-  { encoding: "utf-8", flag: "r" }
-);
+app.use("*",myExpress.static(path.resolve(__dirname,'../public')))
 
 app.use("*", myExpress.urlencoded());
 
@@ -17,9 +15,20 @@ app.use("/user", userRouter);
 
 app.use("/login", loginRouter);
 
-app.use("*", (req, res) => {
-  res.setHeader("content-type", "text/html");
-  res.end(defaultPage);
+app.use('/async', asyncMiddlewares)
+
+/** 设置404 Page */
+app.use("*", async (req, res) => {
+  if (!res.writableFinished) {
+    res.setHeader("content-type", "text/html");
+    /** 移步读取html文件 */
+    const defaultPage = await fs.promises.readFile(
+      path.resolve(__dirname, "../public/NotFound.html"),
+      { encoding: "utf-8", flag: "r" }
+    );
+    res.statusCode = 404;
+    res.end(defaultPage);
+  }
 });
 
 app.listen(8088, () => {

@@ -5,6 +5,7 @@ import urlencoded from "./middlewares/urlencoded";
 import jsonResponse from "./middlewares/jsonResponse";
 import parseQuery from "./middlewares/parseQuery";
 import parseParams from "./middlewares/parseParams";
+import staticFile from "./middlewares/staticFile";
 import {
   Method,
   Middleware,
@@ -29,8 +30,8 @@ function _generateMiddleware(
   const pathReg =
     path === "*"
       ? {
-          regexp: /^\/.*$/,
-        }
+        regexp: /^\/.*$/,
+      }
       : pathToRegexp(path, { end: false });
 
   return {
@@ -47,7 +48,7 @@ export default function myExpress(): MyExpressApp {
     /** 添加集成中间件 */
     _generateMiddleware(Method.ALL, "*", jsonResponse()),
     _generateMiddleware(Method.ALL, "*", parseQuery()),
-    // _generateMiddleware(Method.ALL, "*", parseParams()),
+    _generateMiddleware(Method.ALL, "*", parseParams()),
   ];
 
   /**
@@ -61,15 +62,21 @@ export default function myExpress(): MyExpressApp {
      * @param path 查找路径
      * @param err 错误信息（可选）
      */
-    function _next(iterator: Iterator<Middleware, void, unknown>, err?: any) {
-      const nextMiddleware = iterator.next()?.value;
-      if (nextMiddleware) {
-        nextMiddleware.handler(
-          request as Request,
-          response as Response,
-          _next.bind(null, iterator),
-          nextMiddleware
-        );
+    async function _next(iterator: Iterator<Middleware, void, unknown>, err?: any) {
+      const { value: nextMiddleware, done } = iterator.next() || {};
+      if (done) {
+        if ((_app as MyExpressApp)?._outerNext) {
+          await (_app as MyExpressApp)._outerNext!()
+        }
+      } else {
+        if (nextMiddleware) {
+          await nextMiddleware.handler(
+            request as Request,
+            response as Response,
+            _next.bind(null, iterator),
+            nextMiddleware
+          );
+        }
       }
     }
 
@@ -177,9 +184,10 @@ myExpress.Router = () => {
     currentMiddleware
   ) => {
     req.routerUrl = req.url?.replace(currentMiddleware?.pathRegexp!, "");
-    if(!req.routerUrl?.startsWith('/')){
-        req.routerUrl = '/'+req.routerUrl
+    if (!req.routerUrl?.startsWith('/')) {
+      req.routerUrl = '/' + req.routerUrl
     }
+    router._outerNext = next
     router(req, res);
   };
   for (const key in router) {
@@ -193,3 +201,6 @@ myExpress.Router = () => {
 
 /** 导出middlewares */
 myExpress.urlencoded = urlencoded;
+
+/** 导出 static */
+myExpress.static = staticFile

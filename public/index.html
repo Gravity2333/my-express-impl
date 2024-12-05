@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to My Express</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="./styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to My Express</h1>
+            <p>Your simple and powerful Express framework</p>
+        </header>
+
+        <section class="content">
+            <h2>Sample Code:</h2>
+            <p>Here is an example of how to use <code>My Express</code>:</p>
+
+            <div class="code-container">
+                <pre><code class="language-javascript">
+import myExpress from "./lib/my-express";
+const app = myExpress();
+// 注册中间件，解析body
+app.use("*", myExpress.urlencoded());
+// 注册路由
+app.use("/login", loginRouter);
+// 设置监听
+app.listen(8088, () => {
+    console.log("Server listening on port http://0.0.0.0:8088");
+});
+                </code></pre>
+            </div>
+        </section>
+
+        <footer>
+            <p>Enjoy building with <strong>My Express</strong>!</p>
+        </footer>
+    </div>
+
+    <!-- Optionally, include a syntax highlighter library like Prism -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+</body>
+
+</html>
