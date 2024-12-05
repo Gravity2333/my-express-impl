@@ -10,7 +10,7 @@ exports.default = () => {
         const { pathname } = url_1.default.parse(req.url);
         // 获得路径正则
         const pathRegExp = currentMiddleware === null || currentMiddleware === void 0 ? void 0 : currentMiddleware.pathRegexp;
-        // console.log(pathRegExp, pathname, pathname === null || pathname === void 0 ? void 0 : pathname.match(pathRegExp));
+        // console.log(pathRegExp,pathname,pathname?.match(pathRegExp))
         next();
     };
     return parseParamsHandler;

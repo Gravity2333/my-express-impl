@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -10,6 +19,8 @@ const path_to_regexp_1 = require("path-to-regexp");
 const urlencoded_1 = __importDefault(require("./middlewares/urlencoded"));
 const jsonResponse_1 = __importDefault(require("./middlewares/jsonResponse"));
 const parseQuery_1 = __importDefault(require("./middlewares/parseQuery"));
+const parseParams_1 = __importDefault(require("./middlewares/parseParams"));
+const staticFile_1 = __importDefault(require("./middlewares/staticFile"));
 const typings_1 = require("./typings");
 /**
  * 生成中间件对象
@@ -36,7 +47,7 @@ function myExpress() {
         /** 添加集成中间件 */
         _generateMiddleware(typings_1.Method.ALL, "*", (0, jsonResponse_1.default)()),
         _generateMiddleware(typings_1.Method.ALL, "*", (0, parseQuery_1.default)()),
-        // _generateMiddleware(Method.ALL, "*", parseParams()),
+        _generateMiddleware(typings_1.Method.ALL, "*", (0, parseParams_1.default)()),
     ];
     /**
      * 返回的app函数
@@ -51,11 +62,19 @@ function myExpress() {
          * @param err 错误信息（可选）
          */
         function _next(iterator, err) {
-            var _a;
-            const nextMiddleware = (_a = iterator.next()) === null || _a === void 0 ? void 0 : _a.value;
-            if (nextMiddleware) {
-                nextMiddleware.handler(request, response, _next.bind(null, iterator), nextMiddleware);
-            }
+            return __awaiter(this, void 0, void 0, function* () {
+                const { value: nextMiddleware, done } = iterator.next() || {};
+                if (done) {
+                    if (_app === null || _app === void 0 ? void 0 : _app._outerNext) {
+                        yield _app._outerNext();
+                    }
+                }
+                else {
+                    if (nextMiddleware) {
+                        yield nextMiddleware.handler(request, response, _next.bind(null, iterator), nextMiddleware);
+                    }
+                }
+            });
         }
         function* _middwareGenerator(method, path) {
             for (const middleware of middlewares) {
@@ -125,14 +144,16 @@ function myExpress() {
     };
     return _app;
 }
+/** 设置路由微服务 */
 myExpress.Router = () => {
     const router = myExpress();
     const routerHandler = (req, res, next, currentMiddleware) => {
         var _a, _b;
         req.routerUrl = (_a = req.url) === null || _a === void 0 ? void 0 : _a.replace(currentMiddleware === null || currentMiddleware === void 0 ? void 0 : currentMiddleware.pathRegexp, "");
-        if (!((_b = req.routerUrl) === null || _b === void 0 ? void 0 : _b.startsWith('/'))) {
-            req.routerUrl = '/' + req.routerUrl;
+        if (!((_b = req.routerUrl) === null || _b === void 0 ? void 0 : _b.startsWith("/"))) {
+            req.routerUrl = "/" + req.routerUrl;
         }
+        router._outerNext = next;
         router(req, res);
     };
     for (const key in router) {
@@ -145,3 +166,5 @@ myExpress.Router = () => {
 };
 /** 导出middlewares */
 myExpress.urlencoded = urlencoded_1.default;
+/** 导出 static */
+myExpress.static = staticFile_1.default;

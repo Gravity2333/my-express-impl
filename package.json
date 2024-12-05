@@ -2,7 +2,7 @@
   "name": "my-express-impl",
   "version": "1.0.0",
   "description": "imple a expressjs server",
-  "main": "index.js",
+  "main": "dist/my-express.js",
   "scripts": {
     "start": "nodemon --exec ts-node ./src/app.ts",
     "build": "tsc"

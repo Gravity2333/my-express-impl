@@ -6,6 +6,7 @@ import jsonResponse from "./middlewares/jsonResponse";
 import parseQuery from "./middlewares/parseQuery";
 import parseParams from "./middlewares/parseParams";
 import staticFile from "./middlewares/staticFile";
+import notFoundPage from "./middlewares/notFoundPage";
 import {
   Method,
   Middleware,
@@ -30,8 +31,8 @@ function _generateMiddleware(
   const pathReg =
     path === "*"
       ? {
-        regexp: /^\/.*$/,
-      }
+          regexp: /^\/.*$/,
+        }
       : pathToRegexp(path, { end: false });
 
   return {
@@ -62,11 +63,14 @@ export default function myExpress(): MyExpressApp {
      * @param path 查找路径
      * @param err 错误信息（可选）
      */
-    async function _next(iterator: Iterator<Middleware, void, unknown>, err?: any) {
+    async function _next(
+      iterator: Iterator<Middleware, void, unknown>,
+      err?: any
+    ) {
       const { value: nextMiddleware, done } = iterator.next() || {};
       if (done) {
         if ((_app as MyExpressApp)?._outerNext) {
-          await (_app as MyExpressApp)._outerNext!()
+          await (_app as MyExpressApp)._outerNext!();
         }
       } else {
         if (nextMiddleware) {
@@ -175,6 +179,7 @@ export default function myExpress(): MyExpressApp {
   return _app;
 }
 
+/** 设置路由微服务 */
 myExpress.Router = () => {
   const router = myExpress();
   const routerHandler: MiddlewareHandler = (
@@ -184,10 +189,10 @@ myExpress.Router = () => {
     currentMiddleware
   ) => {
     req.routerUrl = req.url?.replace(currentMiddleware?.pathRegexp!, "");
-    if (!req.routerUrl?.startsWith('/')) {
-      req.routerUrl = '/' + req.routerUrl
+    if (!req.routerUrl?.startsWith("/")) {
+      req.routerUrl = "/" + req.routerUrl;
     }
-    router._outerNext = next
+    router._outerNext = next;
     router(req, res);
   };
   for (const key in router) {
@@ -203,4 +208,7 @@ myExpress.Router = () => {
 myExpress.urlencoded = urlencoded;
 
 /** 导出 static */
-myExpress.static = staticFile
+myExpress.static = staticFile;
+
+/** 导出 notFoundPage */
+myExpress.notFoundPage = notFoundPage;

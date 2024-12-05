@@ -7,7 +7,7 @@ export declare enum Method {
     "DELETE" = "DELETE",
     "ALL" = "ALL"
 }
-export type NextFn = (err?: any) => void;
+export type NextFn = (err?: any) => Promise<void>;
 export interface Request extends http.IncomingMessage {
     query: Record<string, any>;
     body: any;
@@ -32,6 +32,7 @@ export interface MyExpressAppBase {
 }
 export interface MyExpressApp extends MyExpressAppBase {
     (request: Request, response: Response): void;
+    _outerNext?: NextFn;
 }
 export interface MyExpressRouter extends Omit<MyExpressAppBase, 'listen'> {
     (request: Request, response: Response, next: NextFn): void;
